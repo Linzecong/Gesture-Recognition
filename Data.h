@@ -5,26 +5,27 @@
 
 class Data{
 public:
-    std::vector<std::vector<double> > SetIn;
-    std::vector<std::vector<double> > SetOut;
-    QStringList Name;
-    std::vector<std::vector<double> > vecPatterns;
-    int NumPatterns;
-    int VectorSize;
+    std::vector<std::vector<double> > SetIn;//记录训练用的数据
+    std::vector<std::vector<double> > SetOut;//记录训练用数据的目标输出
+
+    QStringList Name;//保存数据所代表的手势
+    std::vector<std::vector<double> > vecPatterns;//同SetIn
+    int NumPatterns;//数据量
+    int VectorSize;//数据大小
     void Init();
 public:
     Data(int numStartPatterns,int vectorSize):NumPatterns(numStartPatterns),VectorSize(vectorSize){
         Init();
         CreateTrainingSetFromData();
     }
-    QString PatternName(int val);
 
-    bool AddData(std::vector<double> data, QString NewName);
-    void CreateTrainingSetFromData();
+    bool AddData(std::vector<double> data, QString NewName);//新增学习数据
+    void CreateTrainingSetFromData();//生成训练的输入和输出
 
     std::vector<std::vector<double> > GetInputSet() {return SetIn;}
     std::vector<std::vector<double> > GetOutputSet(){return SetOut;}
 };
+//定义默认手势的输入向量
 const double InputVectors[NUM_PATTERNS][NUM_VECTORS*2]=
 {
     1,0, 1,0, 1,0, 1,0, 1,0, 1,0, 1,0, 1,0, 1,0, 1,0, 1,0, 1,0,
@@ -52,8 +53,7 @@ const double InputVectors[NUM_PATTERNS][NUM_VECTORS*2]=
     1,0, 1,0, 1,0, 1,0, -0.72,0.69,-0.7,0.72,0.59,0.81, 1,0, 1,0, 1,0, 1,0, 1,0
 };
 
-#endif // DATA
-
+//初始化默认手势
 void Data::Init(){
     for(int ptn=0;ptn<NumPatterns;++ptn){
         std::vector<double> temp;
@@ -74,14 +74,6 @@ void Data::Init(){
     Name.append("Z");
 }
 
-QString Data::PatternName(int val){
-    if(Name.size()>0){
-        return Name[val];
-    }
-    else{
-        return "";
-    }
-}
 
 bool Data::AddData(std::vector<double> data, QString NewName){
     Name.append(NewName);
@@ -91,6 +83,7 @@ bool Data::AddData(std::vector<double> data, QString NewName){
     return true;
 }
 
+//生成训练用的输入和输出
 void Data::CreateTrainingSetFromData(){
     SetIn.clear();
     SetOut.clear();
@@ -101,3 +94,5 @@ void Data::CreateTrainingSetFromData(){
         SetOut.push_back(outputs);
     }
 }
+
+#endif // DATA

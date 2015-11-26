@@ -1,12 +1,12 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#define NUM_PATTERNS        11
-#define NUM_VECTORS         12
+#define NUM_PATTERNS        11   //内置的手势数
+#define NUM_VECTORS         12   //组成每个手势的向量数，越多越精准
 #define ACTIVATION_RESPONSE 1.0
-#define LEARNING_RATE       0.5
-#define ERROR_THRESHOLD     0.003
-#define NUM_HIDDEN_NEURONS  6
+#define LEARNING_RATE       0.5  //学习率（0~1）越大学的越好但越慢，越小学的越快，但不准
+#define ERROR_THRESHOLD     0.003//什么时候训练完
+#define NUM_HIDDEN_NEURONS  6    //隐藏神经元的数量
 
 #include <QWidget>
 #include <QPushButton>
@@ -36,13 +36,14 @@ public:
     bool IsDrawing;
     bool IsLearning;
 
-    void Clear();
-    void CreateVectors();
-    bool Smooth();
+    void Clear();//清空点列表
+    void CreateVectors();//通过点列表生成向量列表
 
-    int TestForMatch();
-    void Train();
-    void Learn();
+    bool Smooth();//通过初始点列表，选出特定个数的点
+
+    int TestForMatch();//判断手势
+    void Train();//训练
+    void Learn();//进入创建手势模式
 
 protected:
     void mousePressEvent(QMouseEvent* e);
@@ -52,8 +53,9 @@ protected:
 };
 
 Widget::Widget(){
+    //各种初始化
     MyData=new Data(NUM_PATTERNS,NUM_VECTORS);
-    Brain=new NeuralNet(NUM_VECTORS*2,NUM_PATTERNS,NUM_HIDDEN_NEURONS,LEARNING_RATE);
+    Brain=new NeuralNet(NUM_VECTORS*2,NUM_PATTERNS,NUM_HIDDEN_NEURONS,LEARNING_RATE);    
     TrainButton=new QPushButton("开始训练",this);
     LearnButton=new QPushButton("进入学习模式",this);
     this->setFixedSize(400,400);
@@ -93,6 +95,7 @@ bool Widget::Smooth(){
     while(vecSmoothPath.size()>NUM_VECTORS+1){
         double shortest=999999;
         int PointMarker=0;
+        //每两个点中间生成一个点，并去掉其中一个，直到剩下特定个数的点
         for(int i=2;i<vecSmoothPath.size()-1;i++){
             double length=sqrt((vecSmoothPath[i-1].x()-vecSmoothPath[i].x())*(vecSmoothPath[i-1].x()-vecSmoothPath[i].x())+(vecSmoothPath[i-1].y()-vecSmoothPath[i].y())*(vecSmoothPath[i-1].y()-vecSmoothPath[i].y()));
             if(length<shortest){
